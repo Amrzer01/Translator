@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gemini Translator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #4f46e5;
+      --hover-color: #4338ca;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --border-color: #e2e8f0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text-primary);
+    }
+
+    .logo {
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo svg {
+      width: a40px;
+      height: 40px;
+      color: var(--primary-color);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    .container {
+      background: var(--card-bg);
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      max-width: 700px;
+      width: 100%;
+    }
+
+    .input-group, .output-group {
+      margin-bottom: 24px;
+    }
+
+    .group-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .group-title {
+      font-weight: 500;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 16px;
+      font-size: 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      resize: vertical;
+      min-height: 120px;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .select-wrapper {
+      position: relative;
+      flex-grow: 1;
+    }
+
+    .select-wrapper::after {
+      content: "▼";
+      font-size: 10px;
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      pointer-events: none;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      font-size: 16px;
+      appearance: none;
+      background-color: white;
+      cursor: pointer;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    button {
+      padding: 12px 24px;
+      border-radius: 12px;
+      border: none;
+      font-size: 16px;
+      font-weight: 500;
+      background-color: var(--primary-color);
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: var(--hover-color);
+    }
+
+    .result {
+      padding: 16px;
+      background: var(--bg-color);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      min-height: 120px;
+      white-space: pre-wrap;
+      font-size: 16px;
+      direction: auto;
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .icon-button {
+      background: none;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 6px;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+    }
+
+    .icon-button:hover {
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+    }
+
+    .icon-button svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 24px 16px;
+      }
+      
+      .controls {
+        flex-direction: column;
+      }
+      
+      button#translate-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12c0 4.418-3.582 8-8 8s-8-3.582-8-8"></path>
+      <path d="M3 12c0-4.418 3.582-8 8-8s8 3.582 8 8"></path>
+      <path d="M10.5 16.5L7 12l3.5-4.5"></path>
+      <path d="M13.5 7.5L17 12l-3.5 4.5"></path>
+    </svg>
+    <h1>Gemini Translator</h1>
+  </div>
+  
+  <div class="container">
+    <div class="input-group">
+      <div class="group-header">
+        <div class="group-title">SOURCE TEXT</div>
+      </div>
+      <textarea id="text" placeholder="Enter your text here..."></textarea>
+    </div>
+    
+    <div class="controls">
+      <div class="select-wrapper">
+        <select id="language">
+          <option value="Arabic">Arabic - العربية</option>
+          <option value="Albanian">Albanian - Shqip</option>
+          <option value="Bengali">Bengali - বাংলা</option>
+          <option value="Chinese">Chinese - 中文</option>
+          <option value="Dutch">Dutch - Nederlands</option>
+          <option value="English">English</option>
+          <option value="French">French - Français</option>
+          <option value="German">German - Deutsch</option>
+          <option value="Greek">Greek - Ελληνικά</option>
+          <option value="Hindi">Hindi - हिन्दी</option>
+          <option value="Italian">Italian - Italiano</option>
+          <option value="Japanese">Japanese - 日本語</option>
+          <option value="Korean">Korean - 한국어</option>
+          <option value="Persian">Persian - فارسی</option>
+          <option value="Portuguese">Portuguese - Português</option>
+          <option value="Russian">Russian - Русский</option>
+          <option value="Spanish">Spanish - Español</option>
+          <option value="Swedish">Swedish - Svenska</option>
+          <option value="Turkish">Turkish - Türkçe</option>
+          <option value="Ukrainian">Ukrainian - Українська</option>
+          <option value="Urdu">Urdu - اردو</option>
+          <option value="Vietnamese">Vietnamese - Tiếng Việt</option>
+        </select>
+      </div>
+      <button id="translate-btn">Translate</button>
+    </div>
+    
+    <div class="output-group">
+      <div class="group-header">
+        <div class="group-title">TRANSLATION</div>
+        <div class="action-buttons">
+          <button class="icon-button" id="copy-btn" title="Copy translation">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="result" id="result">Your translation will appear here.</div>
+    </div>
+  </div>
+  
+  <script>
+    // Add event listener for translate button
+    document.getElementById("translate-btn").addEventListener("click", async function () {
+      const text = document.getElementById('text').value.trim();
+      const language = document.getElementById('language').value;
+      
+      if (!text) {
+        alert("Please enter text to translate.");
+        return;
+      }
+      
+      // Show loading state
+      const resultElement = document.getElementById('result');
+      resultElement.textContent = "Translating...";
+      
+      try {
+        const response = await fetch('/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, language })
+        });
+        
+        const data = await response.json();
+        resultElement.textContent = data.result;
+        
+        // Set direction based on language
+        if (['Arabic', 'Hebrew', 'Persian', 'Urdu'].includes(language)) {
+          resultElement.style.direction = 'rtl';
+        } else {
+          resultElement.style.direction = 'ltr';
+        }
+      } catch (error) {
+        resultElement.textContent = "Translation failed. Please try again.";
+        console.error(error);
+      }
+    });
+    
+    // Add copy functionality
+    document.getElementById("copy-btn").addEventListener("click", function() {
+      const resultText = document.getElementById('result').textContent;
+      
+      if (resultText === "Your translation will appear here." || 
+          resultText === "Translating..." ||
+          resultText === "Translation failed. Please try again.") {
+        return;
+      }
+      
+      navigator.clipboard.writeText(resultText)
+        .then(() => {
+          const copyBtn = document.getElementById('copy-btn');
+          copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6L9 17l-5-5"></path>
+          </svg>`;
+          
+          setTimeout(() => {
+            copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+            </svg>`;
+          }, 2000);
+        })
+        .catch(err => {
+          console.error('Failed to copy text: ', err);
+        });
+    });
+  </script>
+</body>
+</html>
